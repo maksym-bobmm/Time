@@ -28,9 +28,9 @@ module TimeService
     attr_accessor :time_input, :minutes_to_add
 
     def initialize(&block)
-      return unless block_given?
-
-      instance_eval(&block)
+      # return unless block_given? # заменить на одну строку
+      #
+      # instance_eval(&block)
       add_minutes
     end
 
@@ -46,7 +46,7 @@ module TimeService
     private
 
     def parse_input
-      exit unless validate_time
+      raise 'Invalid time' unless validate_time
 
       parse_format
       parse_time
@@ -65,7 +65,6 @@ module TimeService
 
     def validate_time
       return false unless @time_input.include?(':') && @time_input.include?(' ')
-
 
       tested_time = @time_input.split(':')
       tested_time[1] = tested_time[1].split
@@ -99,3 +98,6 @@ TimeService::TimeParser.new.add_minutes('11:12 PM', 10)
 #   @time_input = '12:58 AM'
 #   @minutes_to_add = 3700
 # end
+TimeService::TimeParser.new.add_minutes('11:12 AM', 100) do |time|
+  p time
+end
