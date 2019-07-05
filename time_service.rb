@@ -9,7 +9,6 @@ module TimeService
     def convert_to_minutes(time_input)
       @minutes = time_input[:hours] * 60
       @minutes += time_input[:minutes]
-
     end
 
     def convert_from_minutes
@@ -28,13 +27,6 @@ module TimeService
   class TimeParser < TimeCalculator
     attr_accessor :time_input, :minutes_to_add
 
-    def check_args
-      return if ARGV.length == 3
-
-      puts 'Wrong arguments number (expected 2)'
-      exit
-    end
-
     def initialize(&block)
       return unless block_given?
 
@@ -52,13 +44,6 @@ module TimeService
     end
 
     private
-
-    # def main
-    #   check_args
-    #   # time = parse_time
-    #   convert_to_minutes(time)
-    #   print
-    # end
 
     def parse_input
       return unless validate_time
@@ -102,7 +87,6 @@ module TimeService
       puts "#{time_hours}:#{time_minutes} #{@time_format}"
     end
   end
-
 end
 
 TimeService::TimeParser.new.add_minutes('11:12 PM', 360)
