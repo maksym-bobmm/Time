@@ -46,7 +46,7 @@ module TimeService
     private
 
     def parse_input
-      return unless validate_time
+      exit unless validate_time
 
       parse_format
       parse_time
@@ -64,32 +64,37 @@ module TimeService
     end
 
     def validate_time
-      false unless @time_input.include?(':') && @time_input.include?(' ')
+      return false unless @time_input.include?(':') && @time_input.include?(' ')
+
 
       tested_time = @time_input.split(':')
       tested_time[1] = tested_time[1].split
       tested_time.flatten!
 
-      false unless tested_time[0].to_i.to_s == tested_time[0]
+      return false unless tested_time[0].to_i.to_s == tested_time[0]
 
-      false unless tested_time[1].to_i.to_s == tested_time[1]
+      return false unless tested_time[0].to_i < 12
 
-      false unless %w[AM PM].include?(tested_time[2].upcase)
+      return false unless tested_time[1].to_i.to_s == tested_time[1]
+
+      return false unless tested_time[1].to_i < 59
+
+      return false unless %w[AM PM].include?(tested_time[2].upcase)
 
       true
     end
 
     def print
       time = convert_from_minutes
-      @time_format = time[:hours] > 12 ? 'PM' : 'AM'
-      time_hours = @time_format == 'AM' ? time[:hours] : time[:hours] % 12
-      time_minutes = time[:minutes] < 10 ? "0#{time[:minutes]}" : time[:minutes]
+      @time_format = time.fetch(:hours) > 12 ? 'PM' : 'AM'
+      time_hours = @time_format == 'AM' ? time.fetch(:hours) : time.fetch(:hours) % 12
+      time_minutes = time.fetch(:minutes) < 10 ? "0#{time.fetch(:minutes)}" : time.fetch(:minutes)
       puts "#{time_hours}:#{time_minutes} #{@time_format}"
     end
   end
 end
 
-TimeService::TimeParser.new.add_minutes('11:12 PM', 360)
+TimeService::TimeParser.new.add_minutes('11:12 PM', 10)
 # TimeService::TimeParser.new do
 #   @time_input = '12:58 AM'
 #   @minutes_to_add = 3700
