@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
-# time service
+# time service allows add time
 module TimeService
+  # calculate and store time
   class TimeCalculator
     DAY_IN_MINUTES = 1440
 
     def convert_to_minutes(time_input)
-      # time_arr = time_input.split(':')
-      # hours = time_arr[0]
-      # min = time_arr[1]
-      # @minutes += hours.to_i * 60
-      # @minutes += min.to_i
       @minutes = time_input[:hours] * 60
       @minutes += time_input[:minutes]
 
@@ -28,6 +24,7 @@ module TimeService
     end
   end
 
+  # validate and control input/output
   class TimeParser < TimeCalculator
     attr_accessor :time_input, :minutes_to_add
 
@@ -56,14 +53,16 @@ module TimeService
 
     private
 
-    def main
-      check_args
-      # time = parse_time
-      convert_to_minutes(time)
-      print
-    end
+    # def main
+    #   check_args
+    #   # time = parse_time
+    #   convert_to_minutes(time)
+    #   print
+    # end
 
     def parse_input
+      return unless validate_time
+
       parse_format
       parse_time
     end
@@ -74,13 +73,30 @@ module TimeService
 
     def parse_time
       time_input = @time_input.split(':')
-      hours = @time_format == 'AM' ? time_input[0].to_i : time_input[1].to_i + 12
+      hours = @time_format == 'AM' ? time_input[0].to_i : time_input[0].to_i + 12
       minutes = time_input[1].to_i
       { hours: hours, minutes: minutes }
     end
 
+    def validate_time
+      false unless @time_input.include?(':') && @time_input.include?(' ')
+
+      tested_time = @time_input.split(':')
+      tested_time[1] = tested_time[1].split
+      tested_time.flatten!
+
+      false unless tested_time[0].to_i.to_s == tested_time[0]
+
+      false unless tested_time[1].to_i.to_s == tested_time[1]
+
+      false unless %w[AM PM].include?(tested_time[2].upcase)
+
+      true
+    end
+
     def print
       time = convert_from_minutes
+      @time_format = time[:hours] > 12 ? 'PM' : 'AM'
       time_hours = @time_format == 'AM' ? time[:hours] : time[:hours] % 12
       time_minutes = time[:minutes] < 10 ? "0#{time[:minutes]}" : time[:minutes]
       puts "#{time_hours}:#{time_minutes} #{@time_format}"
@@ -89,7 +105,7 @@ module TimeService
 
 end
 
-TimeService::TimeParser.new.add_minutes('11:12 PM', 3700)
+TimeService::TimeParser.new.add_minutes('11:12 PM', 360)
 # TimeService::TimeParser.new do
 #   @time_input = '12:58 AM'
 #   @minutes_to_add = 3700
